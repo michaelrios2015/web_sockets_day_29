@@ -1,0 +1,55 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+    <h1>Numbers Chat</h1>
+    <a href="#">Chat</a>
+    <ul>
+
+    </ul>
+    <script>
+        const ul = document.querySelector('ul');
+        const a = document.querySelector('a');
+
+        // so this does a post but also the fetch
+        a.addEventListener('click', async (ev) => {
+            ev.preventDefault();
+            // so this still needs an api post in the server 
+            const response = await fetch('/', {
+                method: 'post'
+            })
+            // we need we wait for the response 
+            const message = await response.json();
+            ul.innerHTML += `<li>${message.num}</li>`;
+            // i can see this in the network ws this will be how the other sockets know??
+            console.log(message);
+            socket.send(JSON.stringify(message));
+
+        });
+
+
+
+
+        const url = window.document.location.origin.replace('http', 'ws');
+        const socket = new WebSocket(url);
+        // so when send data from the server but then we need to listen for it from our client?? I think
+        // so we get the meaage then we can start doing things with it 
+        socket.addEventListener('message', (ev) => {
+            const message = JSON.parse(ev.data);
+            if (message.history) {
+                message.history.forEach(_message => {
+                    ul.innerHTML += `<li>${_message.num}</li>`;
+                });
+            }
+            // we need this for the new messages??
+            else {
+                ul.innerHTML += `<li>${message.num}</li>`;
+            }
+        });
+    </script>
+</body>
+
+</html>
